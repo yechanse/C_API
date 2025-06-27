@@ -1,0 +1,15 @@
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/bin/Debug/net9.0/cs_basics
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/bin/Debug/net9.0/cs_basics.deps.json
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/bin/Debug/net9.0/cs_basics.runtimeconfig.json
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/bin/Debug/net9.0/cs_basics.dll
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/bin/Debug/net9.0/cs_basics.pdb
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/cs_basics.GeneratedMSBuildEditorConfig.editorconfig
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/cs_basics.AssemblyInfoInputs.cache
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/cs_basics.AssemblyInfo.cs
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/cs_basics.csproj.CoreCompileInputs.cache
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/cs_basics.sourcelink.json
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/cs_basics.dll
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/refint/cs_basics.dll
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/cs_basics.pdb
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/cs_basics.genruntimeconfig.cache
+/Users/yechanseo/Documents/GitHub/C_API/cs_basics/obj/Debug/net9.0/ref/cs_basics.dll

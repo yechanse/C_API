@@ -1,0 +1,164 @@
+@{
+    ViewData["Title"] = "ERP Dashboard";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+    <style>
+        body { font-family: Arial; margin: 0; background: #f8f9fa; }
+        .header { background: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .container { padding: 30px; }
+        .welcome { background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+        .card h3 { margin-top: 0; color: #495057; }
+        .card .number { font-size: 2em; font-weight: bold; color: #007bff; margin: 10px 0; }
+        .card .revenue { color: #28a745; }
+        .card .warning { color: #ffc107; }
+        .card .danger { color: #dc3545; }
+        .logout-btn { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .logout-btn:hover { background: #c82333; }
+        .status { color: #28a745; font-weight: bold; }
+        .loading { color: #6c757d; font-style: italic; }
+        .refresh-btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-left: 15px; }
+        .refresh-btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏢 SimpleERP Dashboard</h1>
+        <div>
+            <span>Welcome, <strong>@ViewBag.Username</strong>!</span>
+            <button onclick="refreshData()" class="refresh-btn">Refresh Data</button>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline; margin-left: 15px;">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome">
+            <h2>Dashboard Overview 📊</h2>
+            <p><strong>Login Time:</strong> @ViewBag.LoginTime</p>
+            <p class="status">✅ System Status: Online</p>
+        </div>
+
+        <div class="cards" id="dashboard-cards">
+            <div class="card">
+                <h3>📋 Order Management</h3>
+                <div class="number loading" id="total-orders">Loading...</div>
+                <p>Total Orders</p>
+                <div id="today-orders" class="loading">Loading today's orders...</div>
+            </div>
+
+            <div class="card">
+                <h3>📦 Inventory Status</h3>
+                <div class="number loading" id="total-products">Loading...</div>
+                <p>Products in Stock</p>
+                <div id="low-stock" class="warning loading">Loading low stock...</div>
+            </div>
+
+            <div class="card">
+                <h3>👥 Customer Base</h3>
+                <div class="number loading" id="total-customers">Loading...</div>
+                <p>Registered Customers</p>
+                <div id="active-customers" class="loading">Loading active customers...</div>
+            </div>
+
+            <div class="card">
+                <h3>💰 Revenue Analytics</h3>
+                <div class="number revenue loading" id="total-revenue">Loading...</div>
+                <p>Total Revenue</p>
+                <div id="month-revenue" class="loading">Loading monthly revenue...</div>
+            </div>
+        </div>
+
+        <div class="cards">
+            <div class="card" style="grid-column: 1 / -1;">
+                <h3>📈 Recent Activity</h3>
+                <div id="recent-orders" class="loading">Loading recent orders...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE = 'http://localhost:5182/api';
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                // Load order summary
+                const orderResponse = await fetch(`${API_BASE}/order/summary`);
+                const orderData = await orderResponse.json();
+                
+                if (orderData.summary) {
+                    document.getElementById('total-orders').textContent = orderData.summary.totalOrders;
+                    document.getElementById('today-orders').textContent = `Today: ${orderData.summary.todayOrders} orders`;
+                    document.getElementById('total-revenue').textContent = `${orderData.summary.totalRevenue.toLocaleString()}`;
+                    document.getElementById('month-revenue').textContent = `This month: ${orderData.summary.thisMonthRevenue.toLocaleString()}`;
+                }
+
+                // Load inventory summary
+                const inventoryResponse = await fetch(`${API_BASE}/product/inventory`);
+                const inventoryData = await inventoryResponse.json();
+                
+                if (inventoryData.summary) {
+                    document.getElementById('total-products').textContent = inventoryData.summary.totalProducts;
+                    document.getElementById('low-stock').textContent = `Low Stock: ${inventoryData.summary.lowStockProducts} items`;
+                }
+
+                // Load user count (mock for now)
+                const usersResponse = await fetch(`${API_BASE}/auth/users`);
+                const usersData = await usersResponse.json();
+                
+                if (usersData.count) {
+                    document.getElementById('total-customers').textContent = usersData.count;
+                    document.getElementById('active-customers').textContent = `Active: ${usersData.count} users`;
+                }
+
+                // Load recent orders
+                if (orderData.recentOrders) {
+                    const recentOrdersHtml = orderData.recentOrders.map(order => 
+                        `<div style="text-align: left; padding: 10px; border-bottom: 1px solid #eee;">
+                            <strong>${order.orderNumber}</strong> - ${order.customerName} 
+                            <span style="float: right; color: #28a745;">${order.totalAmount}</span>
+                            <br><small style="color: #6c757d;">${order.status} - ${new Date(order.orderDate).toLocaleDateString()}</small>
+                        </div>`
+                    ).join('');
+                    document.getElementById('recent-orders').innerHTML = recentOrdersHtml;
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                document.querySelectorAll('.loading').forEach(el => {
+                    el.textContent = 'Error loading data';
+                    el.style.color = '#dc3545';
+                });
+            }
+        }
+
+        // Refresh data function
+        function refreshData() {
+            // Reset loading states
+            document.querySelectorAll('.number').forEach(el => {
+                el.textContent = 'Loading...';
+                el.className = 'number loading';
+            });
+            
+            document.querySelectorAll('#today-orders, #low-stock, #active-customers, #month-revenue, #recent-orders').forEach(el => {
+                el.textContent = 'Loading...';
+                el.className = 'loading';
+            });
+
+            // Reload data
+            loadDashboardData();
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+    </script>
+</body>
+</html>
